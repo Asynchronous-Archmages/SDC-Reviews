@@ -10,6 +10,10 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/test', (req, res) => {
+  res.json('hello');
+});
+
 app.get('/reviews/:product_id', (req, res) => {
   controller.getReviews(req, res);
 });

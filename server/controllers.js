@@ -6,6 +6,7 @@ const pool = new Pool({
   user: process.env.USER,
   database: process.env.DATABASE,
   password: process.env.PW,
+  authType: 'scram-sha-256'
   port: 5432,
   idleTimeoutMillis: 0,
   connectionTimeoutMillis: 0
