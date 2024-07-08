@@ -16,7 +16,7 @@ module.exports = {
   getReviews: (req, res) => {
     pool.query(
       `SELECT json_build_object(
-      'product', $1::text,
+      'product', ${req.params.product_id}::text,
       'results',
       (SELECT json_agg(json_build_object(
         'review_id', review_id,
@@ -36,10 +36,9 @@ module.exports = {
           WHERE photos.review_id = reviews.review_id)
       ))
       FROM reviews
-      WHERE product_id = $1
+      WHERE product_id = ${req.params.product_id}
       )
-    )`,
-    [req.params.product_id]
+    )`
   )
       .then((query) => res.status(200).send(query.rows[0].json_build_object))
       .catch((err) => res.send(err));
@@ -48,45 +47,45 @@ module.exports = {
   getMetaData: (req, res) => {
     pool.query(
       `SELECT json_build_object(
-    'product_id', $1::text,
+    'product_id', ${req.params.product_id}::text,
     'ratings', json_build_object(
-        '1', (SELECT COUNT(*)::text FROM reviews WHERE rating = 1 AND product_id = $1),
-        '2', (SELECT COUNT(*)::text FROM reviews WHERE rating = 2 AND product_id = $1),
-        '3', (SELECT COUNT(*)::text FROM reviews WHERE rating = 3 AND product_id = $1),
-        '4', (SELECT COUNT(*) FROM reviews WHERE rating = 4 AND product_id = $1),
-        '5', (SELECT COUNT(*)::text FROM reviews WHERE rating = 5 AND product_id = $1)
+        '1', (SELECT COUNT(*)::text FROM reviews WHERE rating = 1 AND product_id = ${req.params.product_id}),
+        '2', (SELECT COUNT(*)::text FROM reviews WHERE rating = 2 AND product_id = ${req.params.product_id}),
+        '3', (SELECT COUNT(*)::text FROM reviews WHERE rating = 3 AND product_id = ${req.params.product_id}),
+        '4', (SELECT COUNT(*) FROM reviews WHERE rating = 4 AND product_id = ${req.params.product_id}),
+        '5', (SELECT COUNT(*)::text FROM reviews WHERE rating = 5 AND product_id = ${req.params.product_id})
     ),
     'recommended', json_build_object(
-        'false', (SELECT COUNT(*)::text FROM reviews WHERE recommend = false AND product_id = $1),
-        'true', (SELECT COUNT(*)::text FROM reviews WHERE recommend = true AND product_id = $1)
+        'false', (SELECT COUNT(*)::text FROM reviews WHERE recommend = false AND product_id = ${req.params.product_id}),
+        'true', (SELECT COUNT(*)::text FROM reviews WHERE recommend = true AND product_id = ${req.params.product_id})
     ),
     'characteristics', json_build_object(
         'Size', json_build_object(
-            'id', (SELECT characteristic_id FROM characteristics WHERE name = 'Size' AND product_id = $1),
-            'value', (SELECT AVG(value)::text FROM rev_characteristics JOIN characteristics ON rev_characteristics.characteristic_id = characteristics.characteristic_id WHERE product_id = $1 AND name = 'Size')
+            'id', (SELECT characteristic_id FROM characteristics WHERE name = 'Size' AND product_id = ${req.params.product_id}),
+            'value', (SELECT AVG(value)::text FROM rev_characteristics JOIN characteristics ON rev_characteristics.characteristic_id = characteristics.characteristic_id WHERE product_id = ${req.params.product_id} AND name = 'Size')
         ),
         'Width', json_build_object(
-            'id', (SELECT characteristic_id FROM characteristics WHERE name = 'Width' AND product_id = $1),
-            'value', (SELECT AVG(value)::text FROM rev_characteristics JOIN characteristics ON rev_characteristics.characteristic_id = characteristics.characteristic_id WHERE product_id = $1 AND name = 'Width')
+            'id', (SELECT characteristic_id FROM characteristics WHERE name = 'Width' AND product_id = ${req.params.product_id}),
+            'value', (SELECT AVG(value)::text FROM rev_characteristics JOIN characteristics ON rev_characteristics.characteristic_id = characteristics.characteristic_id WHERE product_id = ${req.params.product_id} AND name = 'Width')
         ),
         'Fit', json_build_object(
-            'id', (SELECT characteristic_id FROM characteristics WHERE name = 'Fit' AND product_id = $1),
-            'value', (SELECT AVG(value)::text FROM rev_characteristics JOIN characteristics ON rev_characteristics.characteristic_id = characteristics.characteristic_id WHERE product_id = $1 AND name = 'Fit')
+            'id', (SELECT characteristic_id FROM characteristics WHERE name = 'Fit' AND product_id = ${req.params.product_id}),
+            'value', (SELECT AVG(value)::text FROM rev_characteristics JOIN characteristics ON rev_characteristics.characteristic_id = characteristics.characteristic_id WHERE product_id = ${req.params.product_id} AND name = 'Fit')
         ),
         'Length', json_build_object(
-            'id', (SELECT characteristic_id FROM characteristics WHERE name = 'Length' AND product_id = $1),
-            'value', (SELECT AVG(value)::text FROM rev_characteristics JOIN characteristics ON rev_characteristics.characteristic_id = characteristics.characteristic_id WHERE product_id = $1 AND name = 'Length')
+            'id', (SELECT characteristic_id FROM characteristics WHERE name = 'Length' AND product_id = ${req.params.product_id}),
+            'value', (SELECT AVG(value)::text FROM rev_characteristics JOIN characteristics ON rev_characteristics.characteristic_id = characteristics.characteristic_id WHERE product_id = ${req.params.product_id} AND name = 'Length')
         ),
         'Comfort', json_build_object(
-            'id', (SELECT characteristic_id FROM characteristics WHERE name = 'Comfort' AND product_id = $1),
-            'value', (SELECT AVG(value)::text FROM rev_characteristics JOIN characteristics ON rev_characteristics.characteristic_id = characteristics.characteristic_id WHERE product_id = $1 AND name = 'Comfort')
+            'id', (SELECT characteristic_id FROM characteristics WHERE name = 'Comfort' AND product_id = ${req.params.product_id}),
+            'value', (SELECT AVG(value)::text FROM rev_characteristics JOIN characteristics ON rev_characteristics.characteristic_id = characteristics.characteristic_id WHERE product_id = ${req.params.product_id} AND name = 'Comfort')
         ),
         'Quality', json_build_object(
-            'id', (SELECT characteristic_id FROM characteristics WHERE name = 'Quality' AND product_id = $1),
-            'value', (SELECT AVG(value)::text FROM rev_characteristics JOIN characteristics ON rev_characteristics.characteristic_id = characteristics.characteristic_id WHERE product_id = $1 AND name = 'Quality')
+            'id', (SELECT characteristic_id FROM characteristics WHERE name = 'Quality' AND product_id = ${req.params.product_id}),
+            'value', (SELECT AVG(value)::text FROM rev_characteristics JOIN characteristics ON rev_characteristics.characteristic_id = characteristics.characteristic_id WHERE product_id = ${req.params.product_id} AND name = 'Quality')
         )
     )
-) AS metadata`, [req.params.product_id]
+) AS metadata`
     )
       .then((query) => (res.status(200).send(query.rows[0].json_build_object)))
       .catch((err) => (res.send(err)));
