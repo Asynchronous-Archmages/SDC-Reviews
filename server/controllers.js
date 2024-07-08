@@ -14,10 +14,9 @@ const pool = new Pool({
 
 module.exports = {
   getReviews: (req, res) => {
-    const { product_id } = req.params
     pool.query(
       `SELECT json_build_object(
-      'product', $1,
+      'product', $1::text,
       'results',
       (SELECT json_agg(json_build_object(
         'review_id', review_id,
@@ -40,14 +39,13 @@ module.exports = {
       WHERE product_id = $1
       )
     )`,
-    [product_id]
+    [req.params.product_id]
   )
       .then((query) => res.status(200).send(query.rows[0].json_build_object))
       .catch((err) => res.send(err));
   },
 
   getMetaData: (req, res) => {
-    const { product_id } = req.params
     pool.query(
       `SELECT json_build_object(
     'product_id', $1::text,
@@ -88,7 +86,7 @@ module.exports = {
             'value', (SELECT AVG(value)::text FROM rev_characteristics JOIN characteristics ON rev_characteristics.characteristic_id = characteristics.characteristic_id WHERE product_id = $1 AND name = 'Quality')
         )
     )
-) AS metadata`, [product_id]
+) AS metadata`, [req.params.product_id]
     )
       .then((query) => (res.status(200).send(query.rows[0].json_build_object)))
       .catch((err) => (res.send(err)));
