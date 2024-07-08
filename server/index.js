@@ -17,7 +17,7 @@ app.get('/test', (req, res) => {
 app.get('/reviews/:product_id', (req, res) => {
   controller.getReviews(req, res);
 });
-app.get('/reviews/meta/:product_id)', (req, res) => {
+app.get('/reviews/meta/:product_id', (req, res) => {
   controller.getMetaData(req, res);
 });
 app.post('/reviews/:product_id', (req, res) => {
