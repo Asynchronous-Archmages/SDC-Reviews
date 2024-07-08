@@ -47,8 +47,8 @@ module.exports = {
   },
 
   getMetaData: (req, res) => {
+    const product_id = parseInt(req.params.product_id, 10);
     pool.query(
-      const product_id = parseInt(req.params.product_id, 10);
       `SELECT json_build_object(
     'product_id', $1::text,
     'ratings', json_build_object(
